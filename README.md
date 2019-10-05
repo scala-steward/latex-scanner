@@ -54,4 +54,4 @@ very absolutely awesome
 
 ### Speed
 
-It’s scanning all your .tex files in parallel, taking full advantage of your CPU cores. Which is completely irrelevant because 99% is JVM startup time. Which could be alleviated by compiling to a native jvm-free image with sbt graalvm-native-image:packageBin except that it currently does not work because I’m using Scala 2.13.1 and they don’t yet support that.
+It’s scanning all your .tex files in parallel, taking full advantage of your CPU cores. Which is completely irrelevant because 99% is JVM startup time. Which could be alleviated by compiling to a native jvm-free image with `sbt graalvm-native-image:packageBin` except that it currently does not work because I’m using Scala 2.13.1 and they don’t yet support that.
