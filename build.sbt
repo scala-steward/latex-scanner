@@ -1,6 +1,6 @@
 import Dependencies._
 
-ThisBuild / scalaVersion     := "2.13.0" // "2.13.0"
+ThisBuild / scalaVersion     := "2.13.1"
 ThisBuild / version          := "1.0-SNAPSHOT"
 ThisBuild / organization     := "io.doerfler"
 ThisBuild / organizationName := "Philipp Dörfler"
@@ -12,7 +12,7 @@ name := "cmdscanner"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8", "-target:jvm-1.8")
 
-//libraryDependencies += "org.scala-lang.modules" %% "scala-parallel-collections" % "0.2.0"
+libraryDependencies += "org.scala-lang.modules" %% "scala-parallel-collections" % "0.2.0"
 
 enablePlugins(JavaAppPackaging)
 enablePlugins(GraalVMNativeImagePlugin)

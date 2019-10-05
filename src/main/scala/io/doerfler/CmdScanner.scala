@@ -3,7 +3,7 @@ package io.doerfler
 import scala.io.Source
 import java.io.File
 
-//import scala.collection.parallel.CollectionConverters._
+import scala.collection.parallel.CollectionConverters._
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -13,12 +13,11 @@ import java.nio.file.FileVisitOption
 import java.nio.file.Path
 import scala.jdk.StreamConverters._
 
-/**
- * /Users/phi/Documents/workspace/Scala/LatexTodoScanner/target/universal/stage/bin/cmdscanner emph
+/** /Users/phi/Documents/workspace/Scala/LatexTodoScanner/target/universal/stage/bin/cmdscanner emph
  */
 object CmdScanner extends App with FileSupport with RegexSupport {
   val items = for {
-    path    <- Files find (Paths get ".", 255, texFiles) toScala LazyList
+    path    <- (Files find (Paths get ".", 255, texFiles) toScala LazyList).par
     content  = new String(Files readAllBytes path)
     cmdName  = args lift 0 getOrElse "todo"
     matches <- matchesIn(cmdName, content) to Vector
