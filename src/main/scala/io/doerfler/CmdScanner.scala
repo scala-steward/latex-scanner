@@ -13,8 +13,7 @@ import java.nio.file.FileVisitOption
 import java.nio.file.Path
 import scala.jdk.StreamConverters._
 
-/** /Users/phi/Documents/workspace/Scala/LatexTodoScanner/target/universal/stage/bin/cmdscanner emph
- */
+/** target/universal/stage/bin/cmdscanner emph | sort | uniq -di */
 object CmdScanner extends App with FileSupport with RegexSupport {
   val items = for {
     path        <- (Files find (Paths get ".", 255, texFiles) toScala LazyList).par
