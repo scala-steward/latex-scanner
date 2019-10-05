@@ -17,17 +17,18 @@ import scala.jdk.StreamConverters._
  */
 object CmdScanner extends App with FileSupport with RegexSupport {
   val items = for {
-    path    <- (Files find (Paths get ".", 255, texFiles) toScala LazyList).par
-    content  = new String(Files readAllBytes path)
-    cmdName  = args lift 0 getOrElse "todo"
-    matches <- matchesIn(cmdName, content) to Vector
-  } yield matches
+    path        <- (Files find (Paths get ".", 255, texFiles) toScala LazyList).par
+    content      = new String(Files readAllBytes path)
+    cmdName      = args lift 0 getOrElse "todo"
+    oneMatch    <- matchesIn(cmdName, content) to Vector
+    prettyMatch  = oneMatch.replaceAll("\n+", " ")
+  } yield prettyMatch
 
   items foreach println
 }
 
 trait RegexSupport {
-  def Command(name: String) = raw"\\$name\s*\{(.*?)\}".r
+  def Command(name: String) = raw"(?s)\\$name\s*\{(.*?)\}".r
 
   def matchesIn(cmdName: String, s: String) = for (m <- Command(cmdName) findAllMatchIn s) yield m group 1
 }
