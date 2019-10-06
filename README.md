@@ -27,7 +27,7 @@ but you can also give it some other command name to look for.
 For instance, you can have it tell you about duplicate uses of `\emph{}`:
 
 ```
-cmdscanner emph | sort | uniq -di
+cmdscanner emph | sort -f | uniq -di
 ```
 
 ## Features
