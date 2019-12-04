@@ -10,29 +10,40 @@ sbt stage
 
 ## Usage
 
-This gives you this executable:
+This gives you these executables:
 ```
-target/universal/stage/bin/cmdscanner
+CmdScanner/target/universal/stage/bin/cmdscanner
+RefScanner/target/universal/stage/bin/refscanner
 ```
 
 Which you can then call from the directory with your `.tex` sources.
-It also looks for `.tex` files in subdirectories.
-By default it will look for `\todo{}`s:
+Both executables will look for `.tex` files in subdirectories.
+
+## CmdScanner
+
+Find all `todo`s:
 
 ```
-cmdscanner
+cmdscanner todo
 ```
 
-but you can also give it some other command name to look for.
-For instance, you can have it tell you about duplicate uses of `\emph{}`:
+Find duplicate uses of `\emph{}`:
 
 ```
 cmdscanner emph | sort -f | uniq -di
 ```
 
+## RefScanner
+
+Find all `\label`s that you did not reference:
+
+```
+refscanner cref Cref ref autoref
+```
+
 ## Features
 
-### It's multi-line safe!
+### Multi-line aware
 
 ```latex
 This is \emph{very
@@ -45,13 +56,16 @@ absolutely
 awesome}.
 ```
 
-produces (when invoked with emph as parameter):
+produces:
 
 ```text
+$ cmdscanner emph
 very great
 very absolutely awesome
 ```
 
 ### Speed
 
-It’s scanning all your .tex files in parallel, taking full advantage of your CPU cores. Which is completely irrelevant because 99% is JVM startup time. Which could be alleviated by compiling to a native jvm-free image with `sbt graalvm-native-image:packageBin` except that it currently does not work because I’m using Scala 2.13.1 and they don’t yet support that.
+It’s scanning all your .tex files in parallel, taking full advantage of your CPU cores.
+Which is completely irrelevant because 99% is JVM startup time.
+This can be alleviated by compiling to a native jvm-free image with `sbt graalvm-native-image:packageBin`.

@@ -5,18 +5,16 @@ import java.io.File
 
 import scala.collection.parallel.CollectionConverters._
 
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.attribute.BasicFileAttributes
-import java.nio.file.Path
-import scala.jdk.StreamConverters._
 import scala.collection.parallel.ParSeq
 import scala.collection.parallel.immutable.ParSet
+import java.nio.file.Files
 
-/** target/universal/stage/bin/refscanner sref Sref cref Cref ref textref */
+/** target/universal/stage/bin/refscanner sref Sref cref Cref ref autoref */
 object RefScanner extends App with FileSupport with RegexSupport {
+  val refCmds = args to Set
+
   val texSources = for {
-    path   <- (Files find (Paths get ".", 255, texFiles) toScala LazyList).par
+    path   <- (Find allFilesEndingWith ".tex" in ".").par
     source  = new String(Files readAllBytes path)
   } yield source
 
@@ -26,7 +24,7 @@ object RefScanner extends App with FileSupport with RegexSupport {
   } yield label
 
   val allReferences = for {
-    refCmd     <- (args to Set).par
+    refCmd     <- refCmds.par
     oneTexFile <- texSources
     ref        <- Invocations of refCmd in oneTexFile to Set
   } yield ref
@@ -40,18 +38,4 @@ object RefScanner extends App with FileSupport with RegexSupport {
   System.out.flush()
   val stats = s"${unreferenced.size} of ${allLabels.size} labels declared but not referenced.\n${allReferences.size} references total."
   System.err.println(stats)
-}
-
-trait RegexSupport {
-  def Command(name: String) = raw"(?s)\\$name\s*\{(.*?)\}".r
-
-  object Invocations {
-    def of(cmdName: String) = new {
-      def in(text: String) = for (m <- Command(cmdName) findAllMatchIn text) yield m group 1
-    }
-  }
-}
-
-trait FileSupport {
-  def texFiles(p: Path, bfa: BasicFileAttributes) = p.toString.toLowerCase endsWith ".tex"
 }

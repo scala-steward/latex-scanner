@@ -9,13 +9,16 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 lazy val root = (project in file("."))
   .aggregate(cmdScanner, refScanner)
 
-lazy val refScanner = (project in file("RefScanner"))
-  .settings(commonSettings)
-  .enablePlugins(JavaAppPackaging, GraalVMNativeImagePlugin)
+lazy val refScanner = configuredProject("refScanner", file("RefScanner"))
+  .dependsOn(common)
+lazy val cmdScanner = configuredProject("cmdScanner", file("CmdScanner"))
+  .dependsOn(common)
+lazy val common = configuredProject("common", file("Common"))
 
-lazy val cmdScanner = (project in file("CmdScanner"))
-  .settings(commonSettings)
-  .enablePlugins(JavaAppPackaging, GraalVMNativeImagePlugin)
+def configuredProject(id: String, base: File) =
+  Project(id, base)
+    .settings(commonSettings)
+    .enablePlugins(JavaAppPackaging, GraalVMNativeImagePlugin)
 
 lazy val commonSettings: List[Setting[_]] = List(
   scalacOptions := Seq("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8", "-target:jvm-1.8"),
