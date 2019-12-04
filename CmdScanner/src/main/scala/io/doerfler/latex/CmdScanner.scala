@@ -1,4 +1,4 @@
-package io.doerfler
+package io.doerfler.latex
 
 import scala.io.Source
 import java.io.File
@@ -7,9 +7,7 @@ import scala.collection.parallel.CollectionConverters._
 
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.function.BiPredicate
 import java.nio.file.attribute.BasicFileAttributes
-import java.nio.file.FileVisitOption
 import java.nio.file.Path
 import scala.jdk.StreamConverters._
 
