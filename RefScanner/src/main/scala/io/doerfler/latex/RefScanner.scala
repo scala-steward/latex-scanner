@@ -16,8 +16,7 @@ import scopt.OParser
 import io.doerfler.latex.Implicits._
 
 import scala.concurrent.Future
-//import scala.concurrent.ExecutionContext.Implicits._
-import EC.ec
+import scala.concurrent.ExecutionContext.Implicits._
 import scala.util.Failure
 import scala.util.Success
 import org.fusesource.jansi.Ansi
@@ -28,13 +27,9 @@ import scala.concurrent.ExecutionContext
 import java.util.concurrent.Executors
 import java.util.concurrent.ForkJoinPool
 
-object EC {
-  implicit val ec = ExecutionContext.fromExecutorService(Executors.newCachedThreadPool())
-}
-
 /** target/universal/stage/bin/refscanner sref Sref cref Cref ref autoref */
 object RefScanner extends App with ArgumentParsing with RefScannerLogic {
-  def spinner[T](f: Future[T]) = {
+  def spinner[T](f: Future[T]): Unit = {
     val stream = AnsiConsole.err
     var i = 0
     val spinner = Array('\\', '|', '/', '-')
@@ -51,22 +46,16 @@ object RefScanner extends App with ArgumentParsing with RefScannerLogic {
     stream.print(Ansi.ansi().eraseLine(Ansi.Erase.BACKWARD))
     stream.print("\r")
     stream.flush()
-
-    f
   }
 
   AnsiConsole.systemInstall()
-  parsedArguments(args).map(scan).map(spinner).map { f =>
-    f onComplete { 
-      case Failure(exception) => throw exception
-      case Success((out, err)) => 
-        System.out.println(out)
-        System.out.flush()
-        System.err.println(err)
-    }
-    EC.ec.shutdown()
+  parsedArguments(args).map(scan).map { scanF =>
+    spinner(scanF)
+    val (out, err) = Await.result(scanF, Duration.Inf)
+    System.out.println(out)
+    System.out.flush()
+    System.err.println(err)
   }
-
 }
 
 trait RefScannerLogic extends FileSupport with RegexSupport {
