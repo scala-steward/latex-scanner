@@ -38,7 +38,7 @@ cmdscanner emph | sort -f | uniq -di
 Find all `\label`s that you did not reference:
 
 ```
-refscanner cref Cref ref autoref
+refscanner -c cref,Cref,ref,autoref -i commands.tex
 ```
 
 ## Features
