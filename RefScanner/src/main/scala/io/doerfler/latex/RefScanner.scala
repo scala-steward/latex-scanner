@@ -36,10 +36,9 @@ object RefScanner extends App with ArgumentParsing with RefScannerLogic {
     stream.print("Searching… ")
     stream.flush()
     while (! f.isCompleted) {
-      stream.print(Ansi.ansi().saveCursorPosition())
       stream.print(spinner(i))
       stream.flush()
-      stream.print(Ansi.ansi().restoreCursorPosition())
+      stream.print("\b")
       i = (i + 1) % spinner.size
       Thread.sleep(75)
     }
