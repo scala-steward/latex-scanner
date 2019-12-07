@@ -18,7 +18,7 @@ object CmdScanner extends App with FileSupport with RegexSupport {
     content      = new String(Files readAllBytes path)
     cmdName     <- args lift 0 to Vector
     oneMatch    <- Invocations of cmdName in content to Vector
-    prettyMatch  = oneMatch.replaceAll("\n+", " ")
+    prettyMatch  = oneMatch replaceAll ("\n+", " ")
   } yield prettyMatch
 
   items foreach println

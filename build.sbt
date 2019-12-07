@@ -7,22 +7,33 @@ ThisBuild / crossPaths       := false
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 lazy val root = (project in file("."))
-  .aggregate(cmdScanner, refScanner)
+  .aggregate(cmdScanner, refScanner, common)
 
-lazy val refScanner = configuredProject("refScanner", file("RefScanner"))
+lazy val refScanner = appProject("refScanner", file("RefScanner"))
   .dependsOn(common)
-lazy val cmdScanner = configuredProject("cmdScanner", file("CmdScanner"))
+lazy val cmdScanner = appProject("cmdScanner", file("CmdScanner"))
   .dependsOn(common)
-lazy val common = configuredProject("common", file("Common"))
+lazy val common = (project in file("Common"))
+  .settings(commonSettings)
 
-def configuredProject(id: String, base: File) =
+def appProject(id: String, base: File) =
   Project(id, base)
-    .settings(commonSettings)
-    .enablePlugins(JavaAppPackaging, GraalVMNativeImagePlugin)
+    .settings(commonSettings, graalVmSettings, buildInfoSettings)
+    .enablePlugins(JavaAppPackaging, GraalVMNativeImagePlugin, BuildInfoPlugin)
 
 lazy val commonSettings: List[Setting[_]] = List(
   scalacOptions := Seq("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8", "-target:jvm-1.8"),
   libraryDependencies += "org.scala-lang.modules" %% "scala-parallel-collections" % "0.2.0",
+  libraryDependencies += "com.github.scopt" %% "scopt" % "4.0.0-RC2",
+  libraryDependencies += "org.fusesource.jansi" % "jansi" % "1.17.1",
+  libraryDependencies += "jline" % "jline" % "2.14.6"
+)
 
-  graalVMNativeImageOptions ++= Seq("--no-fallback", "--report-unsupported-elements-at-runtime", "-H:+ReportExceptionStackTraces")
+lazy val buildInfoSettings: Seq[Setting[_]] = Seq(
+  buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, executableScriptName),
+  buildInfoPackage := "io.doerfler.latex"
+)
+
+lazy val graalVmSettings: Seq[Setting[_]] = List(
+  graalVMNativeImageOptions ++= Seq("--no-fallback", "--report-unsupported-elements-at-runtime", "-H:+ReportExceptionStackTraces", "-H:+TraceClassInitialization")
 )
