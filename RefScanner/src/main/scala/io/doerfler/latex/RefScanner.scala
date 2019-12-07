@@ -49,7 +49,7 @@ object RefScanner extends App with ArgumentParsing with RefScannerLogic {
   }
 
   AnsiConsole.systemInstall()
-  parsedArguments(args).map(scan).map { scanF =>
+  parsedArguments(args).map(scan).foreach { scanF =>
     spinner(scanF)
     val (out, err) = Await.result(scanF, Duration.Inf)
     System.out.println(out)
