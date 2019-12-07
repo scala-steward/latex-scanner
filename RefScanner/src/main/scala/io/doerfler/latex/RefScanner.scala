@@ -16,15 +16,24 @@ import scopt.OParser
 import io.doerfler.latex.Implicits._
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits._
+//import scala.concurrent.ExecutionContext.Implicits._
+import EC.ec
 import scala.util.Failure
 import scala.util.Success
 import org.fusesource.jansi.Ansi
 import org.fusesource.jansi.AnsiConsole
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+import scala.concurrent.ExecutionContext
+import java.util.concurrent.Executors
+import java.util.concurrent.ForkJoinPool
+
+object EC {
+  implicit val ec = ExecutionContext.fromExecutorService(Executors.newCachedThreadPool())
+}
 
 /** target/universal/stage/bin/refscanner sref Sref cref Cref ref autoref */
 object RefScanner extends App with ArgumentParsing with RefScannerLogic {
-  AnsiConsole.systemInstall()
   def spinner[T](f: Future[T]) = {
     val stream = AnsiConsole.err
     var i = 0
@@ -45,13 +54,19 @@ object RefScanner extends App with ArgumentParsing with RefScannerLogic {
 
     f
   }
-  parsedArguments(args).map(scan).map(spinner).map(_ onComplete { 
-    case Failure(exception) => throw exception
-    case Success((out, err)) => 
-      System.out.println(out)
-      System.out.flush()
-      System.err.println(err)
-    })
+
+  AnsiConsole.systemInstall()
+  parsedArguments(args).map(scan).map(spinner).map { f =>
+    f onComplete { 
+      case Failure(exception) => throw exception
+      case Success((out, err)) => 
+        System.out.println(out)
+        System.out.flush()
+        System.err.println(err)
+    }
+    EC.ec.shutdown()
+  }
+
 }
 
 trait RefScannerLogic extends FileSupport with RegexSupport {

@@ -7,11 +7,11 @@ ThisBuild / crossPaths       := false
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 lazy val root = (project in file("."))
-  .aggregate(cmdScanner, refScanner, common)
+  .aggregate(cmdscanner, refscanner, common)
 
-lazy val refScanner = appProject("refScanner", file("RefScanner"))
+lazy val refscanner = appProject("refscanner", file("Refscanner"))
   .dependsOn(common)
-lazy val cmdScanner = appProject("cmdScanner", file("CmdScanner"))
+lazy val cmdscanner = appProject("cmdscanner", file("Cmdscanner"))
   .dependsOn(common)
 lazy val common = (project in file("Common"))
   .settings(commonSettings)
@@ -35,5 +35,12 @@ lazy val buildInfoSettings: Seq[Setting[_]] = Seq(
 )
 
 lazy val graalVmSettings: Seq[Setting[_]] = List(
-  graalVMNativeImageOptions ++= Seq("--no-fallback", "--report-unsupported-elements-at-runtime", "-H:+ReportExceptionStackTraces", "-H:+TraceClassInitialization")
+  graalVMNativeImageOptions ++= Seq(
+    "-H:+ReportExceptionStackTraces",
+    "-H:+TraceClassInitialization",
+    "--no-fallback",
+    "--verbose",
+    "--report-unsupported-elements-at-runtime",
+    "--allow-incomplete-classpath",
+    "--initialize-at-build-time")
 )

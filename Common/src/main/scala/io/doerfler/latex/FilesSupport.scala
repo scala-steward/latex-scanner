@@ -8,7 +8,7 @@ import scala.jdk.StreamConverters._
 
 trait FileSupport {
   object Find {
-    def allFilesEndingWith(ending: String) = new {
+    case class allFilesEndingWith(ending: String) {
       def in(dir: String) = {
         def filesWithSpecificEnding(p: Path, bfa: BasicFileAttributes) =
           p.toString.toLowerCase endsWith ending
