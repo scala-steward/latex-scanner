@@ -29,7 +29,10 @@ import java.util.concurrent.ForkJoinPool
 
 /** target/universal/stage/bin/refscanner sref Sref cref Cref ref autoref */
 object RefScanner extends App with ArgumentParsing with RefScannerLogic {
+  case object monitor
+
   def spinner[T](f: Future[T]): Unit = {
+    val f2 = f andThen { case _ => monitor.synchronized(monitor.notifyAll) }
     val stream = AnsiConsole.err
     var i = 0
     val spinner = Array('\\', '|', '/', '-')
@@ -40,7 +43,7 @@ object RefScanner extends App with ArgumentParsing with RefScannerLogic {
       stream.flush()
       stream.print("\b")
       i = (i + 1) % spinner.size
-      Thread.sleep(75)
+      monitor synchronized { if (! f2.isCompleted) monitor wait 75 }
     }
     stream.print(Ansi.ansi().eraseLine(Ansi.Erase.BACKWARD))
     stream.print("\r")
