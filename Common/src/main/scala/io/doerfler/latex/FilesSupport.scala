@@ -13,7 +13,7 @@ trait FileSupport {
         def filesWithSpecificEnding(p: Path, bfa: BasicFileAttributes) =
           p.toString.toLowerCase endsWith ending
 
-        Files find (Paths get dir, 255, filesWithSpecificEnding) toScala LazyList
+        Files find (Paths get dir, Int.MaxValue, filesWithSpecificEnding) toScala LazyList
       }
     }
   }

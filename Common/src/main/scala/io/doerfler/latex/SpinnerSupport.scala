@@ -29,7 +29,7 @@ import java.util.concurrent.ForkJoinPool
 
 trait SpinnerSupport {
   AnsiConsole.systemInstall()
-  case object monitor
+  private[this] object monitor
 
   object Spinner {
     case class show(message: String) {
