@@ -27,97 +27,19 @@ import scala.concurrent.ExecutionContext
 import java.util.concurrent.Executors
 import java.util.concurrent.ForkJoinPool
 
-/** target/universal/stage/bin/refscanner sref Sref cref Cref ref autoref */
-object RefScanner extends App with ArgumentParsing with RefScannerLogic {
-  case object monitor
-
-  def spinner[T](f: Future[T]): Unit = {
-    val f2 = f andThen { case _ => monitor.synchronized(monitor.notifyAll) }
-    val stream = AnsiConsole.err
-    var i = 0
-    val spinner = Array('\\', '|', '/', '-')
-    stream.print("Searching… ")
-    stream.flush()
-    while (! f.isCompleted) {
-      stream.print(spinner(i))
-      stream.flush()
-      stream.print("\b")
-      i = (i + 1) % spinner.size
-      monitor synchronized { if (! f2.isCompleted) monitor wait 75 }
-    }
-    stream.print(Ansi.ansi().eraseLine(Ansi.Erase.BACKWARD))
-    stream.print("\r")
-    stream.flush()
-  }
-
-  AnsiConsole.systemInstall()
-  parsedArguments(args).map(scan).foreach { scanF =>
-    spinner(scanF)
+/**
+ * $ sbt refscanner/stage
+ * target/universal/stage/bin/refscanner -c cref,Cref,ref,autoref
+ * 
+ * $ sbt refscanner/graalvm-native-image:packageBin
+ * Refscanner/target/graalvm-native-image/refscanner -c cref,Cref,ref,autoref
+ */
+object RefScanner extends App with ParsingSupport with ScanningSupport with SpinnerSupport {
+  parse(args).map(scan).foreach { scanF =>
+    Spinner show "Searching…" whileWaitingFor scanF
     val (out, err) = Await.result(scanF, Duration.Inf)
     System.out.println(out)
     System.out.flush()
     System.err.println(err)
   }
 }
-
-trait RefScannerLogic extends FileSupport with RegexSupport {
-  def scan(cfg: Config): Future[(String, String)] = Future {
-    val texSources = for {
-      path   <- (Find allFilesEndingWith ".tex" in cfg.workDir ignoring cfg.ignoredTexFiles).par
-      source  = new String(Files readAllBytes path)
-    } yield source
-  
-    val allLabels = for {
-      oneTexFile <- texSources
-      label      <- Invocations of "label" in oneTexFile to Set
-    } yield label
-  
-    val allReferences = for {
-      refCmd     <- cfg.refCommands.par
-      oneTexFile <- texSources
-      ref        <- Invocations of refCmd in oneTexFile to Set
-    } yield ref
-  
-    val unreferenced = for {
-      oneUnreferenced    <- allLabels to Set removedAll allReferences
-      prettyUnreferenced  = oneUnreferenced replaceAll ("\n+", " ")
-    } yield prettyUnreferenced
-  
-    (unreferenced mkString "\n", s"${unreferenced.size} of ${allLabels.size} labels declared but not referenced.\n${allReferences.size} references total.")
-  }
-}
-
-trait ArgumentParsing {
-  def parsedArguments(args: Array[String]): Option[Config] = {
-    val builder = OParser.builder[Config]
-    val parser = {
-      import builder._
-      OParser.sequence(
-        head(BuildInfo.executableScriptName, BuildInfo.version),
-        programName(BuildInfo.executableScriptName),
-        arg[File]("<directory>")
-          .optional()
-          .text("Directory tree to search for .tex files in")
-          .action((f, c) => c.copy(workDir = f.getPath())),
-        opt[Seq[String]]('c', "commands")
-          .required()
-          .valueName("<cmd1>,<cmd2>")
-          .action((x, c) => c.copy(refCommands = x to Set))
-          .text("The commands that count as referencing commands e.g. ref, autoref, vref, Vref, cref, Cref"),
-        opt[Seq[String]]('i', "ignore")
-          .optional()
-          .valueName("<glob1>,<glob2>")
-          .action((x, c) => c.copy(ignoredTexFiles = x to Set))
-          .text("List of .tex files that should be ignored"),
-      )
-    }
-
-    OParser.parse(parser, args, Config())
-  }
-}
-
-case class Config(
-  workDir: String = ".",
-  refCommands: Set[String] = Set.empty,
-  ignoredTexFiles: Set[String] = Set.empty
-)

@@ -1,4 +1,4 @@
-ThisBuild / scalaVersion     := "2.13.1"
+ThisBuild / scalaVersion     := "2.13.2"
 ThisBuild / version          := "1.0-SNAPSHOT"
 ThisBuild / organization     := "io.doerfler"
 ThisBuild / organizationName := "Philipp Dörfler"
@@ -7,7 +7,17 @@ ThisBuild / crossPaths       := false
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 lazy val root = (project in file("."))
-  .aggregate(cmdscanner, refscanner, common)
+  .aggregate(cmdscanner, refscanner, sectionscanner, common)
+
+lazy val sectionscanner = appProject("sectionscanner", file("Sectionscanner"))
+  .dependsOn(common)
+  .settings(
+    initialCommands in (Compile, console) := """import io.doerfler.latex._
+                                                |import Main._""".stripMargin,
+  )
+
+lazy val footnotescanner = appProject("footnotescanner", file("Footnotescanner"))
+  .dependsOn(common)
 
 lazy val refscanner = appProject("refscanner", file("Refscanner"))
   .dependsOn(common)
@@ -26,7 +36,8 @@ lazy val commonSettings: List[Setting[_]] = List(
   libraryDependencies += "org.scala-lang.modules" %% "scala-parallel-collections" % "0.2.0",
   libraryDependencies += "com.github.scopt" %% "scopt" % "4.0.0-RC2",
   libraryDependencies += "org.fusesource.jansi" % "jansi" % "1.17.1",
-  libraryDependencies += "jline" % "jline" % "2.14.6"
+  libraryDependencies += "jline" % "jline" % "2.14.6",
+  libraryDependencies += "com.lihaoyi" %% "fastparse" % "2.3.0",
 )
 
 lazy val buildInfoSettings: Seq[Setting[_]] = Seq(
