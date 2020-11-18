@@ -33,7 +33,7 @@ def appProject(id: String, base: File) =
 
 lazy val commonSettings: List[Setting[_]] = List(
   scalacOptions := Seq("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8", "-target:jvm-1.8"),
-  libraryDependencies += "org.scala-lang.modules" %% "scala-parallel-collections" % "0.2.0",
+  libraryDependencies += "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.0",
   libraryDependencies += "com.github.scopt" %% "scopt" % "4.0.0-RC2",
   libraryDependencies += "org.fusesource.jansi" % "jansi" % "2.0.1",
   libraryDependencies += "jline" % "jline" % "2.14.6",
