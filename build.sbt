@@ -37,7 +37,7 @@ lazy val commonSettings: List[Setting[_]] = List(
   libraryDependencies += "com.github.scopt" %% "scopt" % "4.0.0",
   libraryDependencies += "org.fusesource.jansi" % "jansi" % "2.2.0",
   libraryDependencies += "jline" % "jline" % "2.14.6",
-  libraryDependencies += "com.lihaoyi" %% "fastparse" % "2.3.0",
+  libraryDependencies += "com.lihaoyi" %% "fastparse" % "2.3.1",
 )
 
 lazy val buildInfoSettings: Seq[Setting[_]] = Seq(
