@@ -35,7 +35,7 @@ lazy val commonSettings: List[Setting[_]] = List(
   scalacOptions := Seq("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8", "-target:jvm-1.8"),
   libraryDependencies += "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.3",
   libraryDependencies += "com.github.scopt" %% "scopt" % "4.0.1",
-  libraryDependencies += "org.fusesource.jansi" % "jansi" % "2.3.3",
+  libraryDependencies += "org.fusesource.jansi" % "jansi" % "2.3.4",
   libraryDependencies += "jline" % "jline" % "2.14.6",
   libraryDependencies += "com.lihaoyi" %% "fastparse" % "2.3.2",
 )
