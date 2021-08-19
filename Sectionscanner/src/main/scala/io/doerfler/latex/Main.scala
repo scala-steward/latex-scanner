@@ -21,7 +21,7 @@ object Main extends App with FileSupport with ParserSupport {
   } yield path -> sections
 
   val details = for {
-    (p, secs) <- allSections.seq.sortBy(bla => - Progress.within(bla._2))
+    (p, secs) <- allSections.seq.sortBy(bla => -Progress.within(bla._2))
     if secs.nonEmpty && Progress.within(secs) < 1
   } yield {
     s"${p.getFileName().toString()}: ${f"${Progress.within(secs) * 100}%.0f%%"}"
@@ -43,26 +43,41 @@ object Main extends App with FileSupport with ParserSupport {
   def bar(space: Int, fraction: Double) = {
     val doneF = math.ceil(space * fraction).toInt
     val todoF = space - doneF
-    
+
     ("▓" repeat doneF) + ("░" repeat todoF)
   }
 
   val detailsBars = for {
-    (p, secs) <- allSections.seq.sortBy(bla => - Progress.within(bla._2))
+    (p, secs) <- allSections.seq.sortBy(bla => -Progress.within(bla._2))
     if secs.nonEmpty
     done = secs.filter(_.status == "done").size
     todo = secs.filter(_.status != "done").size
   } yield f"${percentBar(10, Progress.within(secs))}%s ${p.getFileName().toString()}%s"
 
   val longBar = bar(msg.length - 5, overalFraction)
-  val shortBar = bar(11, overalFraction) // 11 is the largest you can go with a status icon and spotify adding even more description to the status
+  val shortBar = bar(
+    11,
+    overalFraction
+  ) // 11 is the largest you can go with a status icon and spotify adding even more description to the status
 
   if (details.nonEmpty) {
-    println(details.mkString("Progress in non completed files:\n--------------------------------\n- ", "\n- ", ""))
+    println(
+      details.mkString(
+        "Progress in non completed files:\n--------------------------------\n- ",
+        "\n- ",
+        ""
+      )
+    )
     println()
   }
   if (detailsBars.nonEmpty) {
-    println(detailsBars.mkString("Progress in all files:\n----------------------\n- ", "\n- ", ""))
+    println(
+      detailsBars.mkString(
+        "Progress in all files:\n----------------------\n- ",
+        "\n- ",
+        ""
+      )
+    )
     println(msg)
     println()
   }
@@ -70,7 +85,7 @@ object Main extends App with FileSupport with ParserSupport {
   println()
   println("Progress Discord: " + shortBar + f" ${overalFraction * 100}%2.0f%%")
   // Seq("bmndr", "sections", todo.toString).!
-  
+
   // for {
   //   as <- allSections.seq
   //   (f, secs) = as

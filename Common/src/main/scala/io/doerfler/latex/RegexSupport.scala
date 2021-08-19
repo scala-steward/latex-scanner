@@ -5,7 +5,8 @@ trait RegexSupport {
 
   object Invocations {
     case class of(cmdName: String) {
-      def in(text: String) = for (m <- Command(cmdName) findAllMatchIn text) yield m group 1
+      def in(text: String) = for (m <- Command(cmdName) findAllMatchIn text)
+        yield m group 1
     }
   }
 }

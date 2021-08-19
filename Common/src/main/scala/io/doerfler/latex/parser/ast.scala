@@ -1,7 +1,8 @@
 package io.doerfler.latex
 
 sealed trait Ast
-case class Section(level: Int, name: String, status: String, content: String) extends Ast
+case class Section(level: Int, name: String, status: String, content: String)
+    extends Ast
 
 case class ToDo(kind: TodoKind, text: String) extends Ast
 sealed trait TodoKind

@@ -27,14 +27,17 @@ import scala.concurrent.ExecutionContext
 import java.util.concurrent.Executors
 import java.util.concurrent.ForkJoinPool
 
-/**
- * $ sbt refscanner/stage
- * target/universal/stage/bin/refscanner -c cref,Cref,ref,autoref
- * 
- * $ sbt refscanner/graalvm-native-image:packageBin
- * Refscanner/target/graalvm-native-image/refscanner -c cref,Cref,ref,autoref
- */
-object RefScanner extends App with ParsingSupport with ScanningSupport with SpinnerSupport {
+/** $ sbt refscanner/stage target/universal/stage/bin/refscanner -c
+  * cref,Cref,ref,autoref
+  *
+  * $ sbt refscanner/graalvm-native-image:packageBin
+  * Refscanner/target/graalvm-native-image/refscanner -c cref,Cref,ref,autoref
+  */
+object RefScanner
+    extends App
+    with ParsingSupport
+    with ScanningSupport
+    with SpinnerSupport {
   parse(args).map(scan).foreach { scanF =>
     Spinner show "Searching…" whileWaitingFor scanF
     val (out, err) = Await.result(scanF, Duration.Inf)

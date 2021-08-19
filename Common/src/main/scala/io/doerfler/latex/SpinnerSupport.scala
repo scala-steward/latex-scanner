@@ -40,12 +40,12 @@ trait SpinnerSupport {
         val spinner = Array('\\', '|', '/', '-')
         stream.print(f"$message%s  ")
         stream.flush()
-        while (! f.isCompleted) {
+        while (!f.isCompleted) {
           stream.print("\b")
           stream.print(spinner(i))
           stream.flush()
           i = (i + 1) % spinner.size
-          monitor synchronized { if (! f2.isCompleted) monitor wait 75 }
+          monitor synchronized { if (!f2.isCompleted) monitor wait 75 }
         }
         stream.print(Ansi.ansi().eraseLine(Ansi.Erase.BACKWARD))
         stream.print("\r")

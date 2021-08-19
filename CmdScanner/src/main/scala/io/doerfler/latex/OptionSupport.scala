@@ -48,7 +48,7 @@ trait OptionSupport {
           .optional()
           .valueName("<glob1>,<glob2>")
           .action((x, c) => c.copy(ignoredTexFiles = x to Set))
-          .text("List of .tex files that should be ignored"),
+          .text("List of .tex files that should be ignored")
       )
     }
 
@@ -57,7 +57,7 @@ trait OptionSupport {
 }
 
 case class Config(
-  workDir: String = ".",
-  commands: Set[String] = Set.empty,
-  ignoredTexFiles: Set[String] = Set.empty
+    workDir: String = ".",
+    commands: Set[String] = Set.empty,
+    ignoredTexFiles: Set[String] = Set.empty
 )

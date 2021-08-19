@@ -43,12 +43,14 @@ trait ParsingSupport {
           .required()
           .valueName("<cmd1>,<cmd2>")
           .action((x, c) => c.copy(refCommands = x to Set))
-          .text("The commands that count as referencing commands e.g. ref, autoref, vref, Vref, cref, Cref"),
+          .text(
+            "The commands that count as referencing commands e.g. ref, autoref, vref, Vref, cref, Cref"
+          ),
         opt[Seq[String]]('i', "ignore")
           .optional()
           .valueName("<glob1>,<glob2>")
           .action((x, c) => c.copy(ignoredTexFiles = x to Set))
-          .text("List of .tex files that should be ignored"),
+          .text("List of .tex files that should be ignored")
       )
     }
 
@@ -57,7 +59,7 @@ trait ParsingSupport {
 }
 
 case class Config(
-  workDir: String = ".",
-  refCommands: Set[String] = Set.empty,
-  ignoredTexFiles: Set[String] = Set.empty
+    workDir: String = ".",
+    refCommands: Set[String] = Set.empty,
+    ignoredTexFiles: Set[String] = Set.empty
 )
