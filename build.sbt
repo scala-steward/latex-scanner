@@ -41,7 +41,7 @@ lazy val commonSettings: List[Setting[_]] = List(
     "UTF-8",
     "-target:jvm-1.8"
   ),
-  libraryDependencies += "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.3",
+  libraryDependencies += "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.4",
   libraryDependencies += "com.github.scopt" %% "scopt" % "4.0.1",
   libraryDependencies += "org.fusesource.jansi" % "jansi" % "2.3.4",
   libraryDependencies += "jline" % "jline" % "2.14.6",
